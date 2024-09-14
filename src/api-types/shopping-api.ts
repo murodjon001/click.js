@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
-import * as crypto from "crypto";
+import sha1 from "crypto-js/sha1";
+import md5 from "crypto-js/md5";
 import { API_URL, COMPLETE_URL, PREPARE_URL } from "../constants/api-url";
 import { IShoppingApi } from "../interfaces/shopping-api.interface";
 import { IShoppingApiParams } from '../interfaces/shopping-api-params.interface';
@@ -101,15 +102,18 @@ export class ShoppingApi implements IShoppingApi {
      */
 
     private set signString(params: IPrepareApiParams){
-        this.sign_string = crypto.createHash('md5').update(
-            params.click_trans_id + 
-            this.service_id + 
-            this.secret_key + 
-            this.merchant_trans_id + 
-            params.amount + 
-            this.action + 
-            this.sign_time
-        )
+        const data =  
+        params.click_trans_id + 
+        this.service_id + 
+        this.secret_key + 
+        this.merchant_trans_id + 
+        params.amount + 
+        this.action + 
+        this.sign_time
+           
+        
+
+        this.sign_string = sha1(data).toString()
     }
 
 
@@ -136,7 +140,10 @@ export class ShoppingApi implements IShoppingApi {
      * @private
      */
     private get authorization (): string{
-        return `${this.user_id}:${crypto.createHash('sha1').update(this.timestamp)}${crypto.createHash('sha1').update(this.secret_key)}:${this.timestamp}`
+        const timestampHash = md5(String(this.timestamp)).toString()
+        const secretKeyHash = md5(this.secret_key).toString()
+
+        return `${this.user_id}:${timestampHash}${secretKeyHash}:${this.timestamp}`
     }
 
 
