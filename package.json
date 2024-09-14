@@ -7,7 +7,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/node": "^22.5.5"
   },
-  "name": "click_uz_js",
+  "name": "click_js",
   "version": "1.0.0",
   "description": "### Lightweight library to facilitate the integration of Click payment gateway in your backend application.",
   "main": "index.js",
