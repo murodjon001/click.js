@@ -1,0 +1,1 @@
+export type TPaymentApi = 'shopping_api' // other api
