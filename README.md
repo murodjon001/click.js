@@ -5,7 +5,7 @@
 ### Basic usage
 
 ```typescript
-import { ClickClient } from 'payme';
+import { ClickClient } from 'click';
 
 // choose the API Type (Merchant API and Shopping API)
 const shoppingApi = ClickClient.create('shopping_api');
