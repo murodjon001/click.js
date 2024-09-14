@@ -6,7 +6,7 @@
   "devDependencies": {
     "@types/node": "^22.5.5"
   },
-  "name": "click_uz.js",
+  "name": "click_uz_js",
   "version": "1.0.0",
   "description": "### Lightweight library to facilitate the integration of Click payment gateway in your backend application.",
   "main": "index.js",
