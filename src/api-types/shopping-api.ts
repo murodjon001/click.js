@@ -12,19 +12,19 @@ import { ICompleteApiResponse } from '../interfaces/complete-api-response.interf
 export class ShoppingApi implements IShoppingApi {
     private clickApiUrl = API_URL;
 
-    private merchant_trans_id: string; // merchant_trans_id
-    private service_id: string;
-    private user_id: string;
-    private secret_key: string
+    private merchant_trans_id!: string; // merchant_trans_id
+    private service_id!: string;
+    private user_id!: string;
+    private secret_key!: string;
 
-    private click_trans_id: number
-    private click_paydoc_id: number
-    private amount: number
+    private click_trans_id!: number;
+    private click_paydoc_id!: number;
+    private amount!: number;
     private action: number = 0
     private error: number = 0
-    private error_note: string
+    private error_note!: string;
     private sign_time: string = new Date().toString()
-    private sign_string: string
+    private sign_string!: string;
 
     public setConnectionKeys(params: IShoppingApiParams): void {
         this.merchant_trans_id = params.merchant_trans_id;
@@ -85,7 +85,6 @@ export class ShoppingApi implements IShoppingApi {
     /**
      * Sets amount, click_trans_id and click_paydoc_id properties
      * @private
-     * @returns {void}
      * @param {IPrepareApiParams} 
      */
 
