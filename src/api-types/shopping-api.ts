@@ -12,44 +12,38 @@ import { ICompleteApiResponse } from '../interfaces/complete-api-response.interf
 export class ShoppingApi implements IShoppingApi {
     private clickApiUrl = API_URL;
 
-    private merchant_trans_id!: string; // merchant_trans_id
-    private service_id!: string;
-    private user_id!: string;
     private secret_key!: string;
+    private merchant_id!: number;
+    private service_id!: number;
+    private user_id!: number;
 
-    private click_trans_id!: number;
-    private click_paydoc_id!: number;
-    private amount!: number;
-    private action: number = 0
-    private error: number = 0
-    private error_note!: string;
-    private sign_time: string = new Date().toString()
     private sign_string!: string;
 
     public setConnectionKeys(params: IShoppingApiParams): void {
-        this.merchant_trans_id = params.merchant_trans_id;
-        this.service_id = params.service_id;
-        this.user_id = params.user_id;
+        this.merchant_id = params.merchant_id
         this.secret_key = params.secret_key
+        this.user_id = params.user_id
+        this.service_id = params.service_id
     }
 
     async prepare(params: IPrepareApiParams): Promise<IPrepareApiResponse> {
         this.validateCredentials()
-        this.signString = params
-        this.otherProperties = params
-
+        this.signStringForPrepare = params
+        this.checkSignString(params.sign_string)
+        this.checkError(params)
+        
         try{
             const res = await this.clickRequest.post(PREPARE_URL, {
                 click_trans_id: params.click_trans_id,
                 click_paydoc_id: params.click_paydoc_id,
                 amount: params.amount,
-                service_id: this.service_id,
-                merchant_trans_id: this.merchant_trans_id,
-                action: this.action,
-                error: this.error,
-                error_note: this.error_note,
-                sign_time: this.sign_time,
-                sign_string: this.sign_string
+                service_id: params.service_id,
+                merchant_trans_id: params.merchant_trans_id,
+                action: params.action,
+                error: params.error,
+                error_note: params.error_note,
+                sign_time: params.sign_time,
+                sign_string: params.sign_string
             })
 
             return res.data;
@@ -60,19 +54,22 @@ export class ShoppingApi implements IShoppingApi {
     }
 
     async complete(params: ICompleteApiParams): Promise<ICompleteApiResponse> {
+        this.signStringForComplete = params
+        this.checkError(params)
+
         try{
             const res = await this.clickRequest.post(COMPLETE_URL, {
                 merchant_prepare_id: params.merchant_prepare_id,
-                click_trans_id: this.click_trans_id,
-                click_paydoc_id: this.click_paydoc_id,
-                amount: this.amount,
-                service_id: this.service_id,
-                merchant_trans_id: this.merchant_trans_id,
-                action: this.action,
-                error: this.error,
-                error_note: this.error_note,
-                sign_time: this.sign_time,
-                sign_string: this.sign_string
+                click_trans_id: params.click_trans_id,
+                click_paydoc_id: params.click_paydoc_id,
+                amount: params.amount,
+                service_id: params.service_id,
+                merchant_trans_id: params.merchant_trans_id,
+                action: params.action,
+                error: params.error,
+                error_note: params.error_note,
+                sign_time: params.sign_time,
+                sign_string: params.sign_string
             })
 
             return res.data;
@@ -82,16 +79,16 @@ export class ShoppingApi implements IShoppingApi {
         }
     }
 
-    /**
-     * Sets amount, click_trans_id and click_paydoc_id properties
-     * @private
-     * @param {IPrepareApiParams} 
-     */
+    private checkSignString(signString: string): void {
+        if (signString !== this.sign_string){
+            throw new Error("Sign string is not valid");
+        }
+    }
 
-    private set otherProperties(params: IPrepareApiParams){
-        this.amount = params.amount
-        this.click_trans_id = params.click_trans_id
-        this.click_paydoc_id = params.click_paydoc_id
+    private checkError(params: IPrepareApiParams | ICompleteApiParams){
+        if(params.error < 0){
+            throw new Error(params.error_note);
+        }
     }
 
     /**
@@ -100,21 +97,32 @@ export class ShoppingApi implements IShoppingApi {
      * @param {IPrepareApiParams} 
      */
 
-    private set signString(params: IPrepareApiParams){
+    private set signStringForPrepare(params: IPrepareApiParams){
         const data =  
         params.click_trans_id + 
         this.service_id + 
         this.secret_key + 
-        this.merchant_trans_id + 
+        params.merchant_trans_id + 
         params.amount + 
-        this.action + 
-        this.sign_time
+        params.action + 
+        params.sign_time
            
-        
-
-        this.sign_string = sha1(data).toString()
+        this.sign_string = md5(data).toString()
     }
 
+    private set signStringForComplete(params: ICompleteApiParams){
+        const data =  
+        params.click_trans_id + 
+        this.service_id + 
+        this.secret_key + 
+        params.merchant_trans_id + 
+        params.merchant_prepare_id +
+        params.amount + 
+        params.action + 
+        params.sign_time
+           
+        this.sign_string = md5(data).toString()
+    }
 
     /**
      * Gets request for click service
@@ -139,10 +147,9 @@ export class ShoppingApi implements IShoppingApi {
      * @private
      */
     private get authorization (): string{
-        const timestampHash = md5(String(this.timestamp)).toString()
-        const secretKeyHash = md5(this.secret_key).toString()
+        const timestampHashAndSecretKeyHash = sha1(String(this.timestamp) + this.secret_key).toString()
 
-        return `${this.user_id}:${timestampHash}${secretKeyHash}:${this.timestamp}`
+        return `${this.user_id}:${timestampHashAndSecretKeyHash}:${this.timestamp}`
     }
 
 
@@ -158,10 +165,6 @@ export class ShoppingApi implements IShoppingApi {
     private validateCredentials(): void {
         if (!this.secret_key) {
             throw new Error("secret key is required");
-        }
-
-        if (!this.user_id) {
-            throw new Error("user_id is required");
         }
 
         this.clickRequest

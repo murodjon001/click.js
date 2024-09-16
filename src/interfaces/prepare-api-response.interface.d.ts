@@ -4,4 +4,6 @@ export interface IPrepareApiResponse {
     merchant_prepare_id: number
     error: number
     error_note: string
+    sign_time: string
+    sign_string: string
 }

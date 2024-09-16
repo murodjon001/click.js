@@ -1,6 +1,6 @@
 export interface IShoppingApiParams {
-    merchant_trans_id: string;
-    service_id: string;
-    user_id: string;
+    merchant_id: number;
+    service_id: number;
+    user_id: number;
     secret_key: string
 }
