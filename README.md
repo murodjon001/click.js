@@ -5,7 +5,7 @@
 ### Basic usage
 
 ```typescript
-import { ClickClient } from 'click';
+import { ClickClient } from 'click-uz-js';
 
 // choose the API Type (Merchant API and Shopping API)
 const shoppingApi = ClickClient.create('shopping_api');
