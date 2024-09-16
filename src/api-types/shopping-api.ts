@@ -8,6 +8,7 @@ import { IPrepareApiParams } from '../interfaces/prepare-api-params.interface';
 import { IPrepareApiResponse } from '../interfaces/prepare-api-response.interface';
 import { ICompleteApiParams } from '../interfaces/complete-api-params.interface';
 import { ICompleteApiResponse } from '../interfaces/complete-api-response.interface';
+import { ErrorException } from '../utils/error-exeptions/error.exception';
 
 export class ShoppingApi implements IShoppingApi {
     private clickApiUrl = API_URL;
@@ -86,9 +87,7 @@ export class ShoppingApi implements IShoppingApi {
     }
 
     private checkError(params: IPrepareApiParams | ICompleteApiParams){
-        if(params.error < 0){
-            throw new Error(params.error_note);
-        }
+        return new ErrorException(params.error);
     }
 
     /**

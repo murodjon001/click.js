@@ -1,5 +1,5 @@
 import { ShoppingApi } from "./api-types/shopping-api";
-import { TPaymentApi } from "./types/payment-api.type";
+import { TPaymentApi } from "./utils/types/payment-api.type";
 
 export class ClickClient {
     static create(type: TPaymentApi){
