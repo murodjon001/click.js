@@ -1,5 +1,5 @@
 export interface IPrepareApiParams {
-    service_id: string
+    service_id: number
     sign_time: string
     sign_string: string
     action: number
