@@ -1,18 +1,14 @@
-import axios, { AxiosInstance } from 'axios';
-import sha1 from "crypto-js/sha1";
 import md5 from "crypto-js/md5";
-import { API_URL, COMPLETE_URL, PREPARE_URL } from "../constants/api-url";
 import { IShoppingApi } from "../interfaces/shopping-api.interface";
-import { IShoppingApiParams } from '../interfaces/shopping-api-params.interface';
+import { IConnectionKeysParams } from '../interfaces/connection-keys-params.interface';
 import { IPrepareApiParams } from '../interfaces/prepare-api-params.interface';
 import { IPrepareApiResponse } from '../interfaces/prepare-api-response.interface';
 import { ICompleteApiParams } from '../interfaces/complete-api-params.interface';
 import { ICompleteApiResponse } from '../interfaces/complete-api-response.interface';
 import { ErrorException } from '../utils/error-exeptions/error.exception';
+import { getRandomNumber } from '../utils/generate-random-number';
 
 export class ShoppingApi implements IShoppingApi {
-    private clickApiUrl = API_URL;
-
     private secret_key!: string;
     private merchant_id!: number;
     private service_id!: number;
@@ -20,7 +16,7 @@ export class ShoppingApi implements IShoppingApi {
 
     private sign_string!: string;
 
-    public setConnectionKeys(params: IShoppingApiParams): void {
+    public setConnectionKeys(params: IConnectionKeysParams): void {
         this.merchant_id = params.merchant_id
         this.secret_key = params.secret_key
         this.user_id = params.user_id
@@ -34,20 +30,15 @@ export class ShoppingApi implements IShoppingApi {
         this.checkError(params)
         
         try{
-            const res = await this.clickRequest.post(PREPARE_URL, {
+            return {
                 click_trans_id: params.click_trans_id,
-                click_paydoc_id: params.click_paydoc_id,
-                amount: params.amount,
-                service_id: params.service_id,
                 merchant_trans_id: params.merchant_trans_id,
-                action: params.action,
                 error: params.error,
                 error_note: params.error_note,
+                sign_string: params.sign_string,
                 sign_time: params.sign_time,
-                sign_string: params.sign_string
-            })
-
-            return res.data;
+                merchant_prepare_id: getRandomNumber()
+            }
         }catch(err){
             console.error(err)
             throw new Error("Error while prepare")
@@ -59,21 +50,14 @@ export class ShoppingApi implements IShoppingApi {
         this.checkError(params)
 
         try{
-            const res = await this.clickRequest.post(COMPLETE_URL, {
-                merchant_prepare_id: params.merchant_prepare_id,
+           return {
                 click_trans_id: params.click_trans_id,
-                click_paydoc_id: params.click_paydoc_id,
-                amount: params.amount,
-                service_id: params.service_id,
                 merchant_trans_id: params.merchant_trans_id,
-                action: params.action,
                 error: params.error,
                 error_note: params.error_note,
-                sign_time: params.sign_time,
-                sign_string: params.sign_string
-            })
+                merchant_confirm_id: getRandomNumber()
+            }
 
-            return res.data;
         }catch(err){
             console.error(err)
             throw new Error("Error while prepare")
@@ -123,50 +107,9 @@ export class ShoppingApi implements IShoppingApi {
         this.sign_string = md5(data).toString()
     }
 
-    /**
-     * Gets request for click service
-     * @private
-     * @returns {AxiosInstance}
-     */
-    private get clickRequest(): AxiosInstance {
-        return axios.create({
-            baseURL: this.clickApiUrl,
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Auth': this.authorization,
-            }
-        })
-    }
-
-
-    /**
-     * Gets authorization token
-     * @returns {string} 
-     * @private
-     */
-    private get authorization (): string{
-        const timestampHashAndSecretKeyHash = sha1(String(this.timestamp) + this.secret_key).toString()
-
-        return `${this.user_id}:${timestampHashAndSecretKeyHash}:${this.timestamp}`
-    }
-
-
-    /**
-     * Gets the current Unix timestamp in seconds.
-     * @private
-     * @returns {number} The current Unix timestamp in seconds.
-     */
-    private get timestamp (): number{
-        return Math.floor(Date.now() / 1000);
-    }
-
     private validateCredentials(): void {
         if (!this.secret_key) {
             throw new Error("secret key is required");
         }
-
-        this.clickRequest
     }
-
 }

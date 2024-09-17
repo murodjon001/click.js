@@ -25,7 +25,7 @@ interface IPrepareApiResponse {
     error_note: string
 }
 
-interface IShoppingApiParams {
+interface IConnectionKeysParams {
     merchant_trans_id: string;
     service_id: string;
     user_id: string;
@@ -33,7 +33,7 @@ interface IShoppingApiParams {
 }
 
 interface IShoppingApi {
-    setConnectionKeys(params: IShoppingApiParams): void
+    setConnectionKeys(params: IConnectionKeysParams): void
     prepare(params: IPrepareApiParams): Promise<IPrepareApiResponse> 
     complete(params: ICompleteApiParams): Promise<ICompleteApiResponse>
 }
@@ -52,7 +52,7 @@ declare class ShoppingApi implements IShoppingApi {
     private error_note;
     private sign_time;
     private sign_string;
-    setConnectionKeys(params: IShoppingApiParams): void;
+    setConnectionKeys(params: IConnectionKeysParams): void;
     prepare(params: IPrepareApiParams): Promise<IPrepareApiResponse>;
     complete(params: ICompleteApiParams): Promise<ICompleteApiResponse>;
     /**

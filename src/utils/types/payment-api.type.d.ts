@@ -1,1 +1,1 @@
-export type TPaymentApi = 'shopping_api' // other api
+export type TPaymentApi = 'shopping' | 'merchant'
