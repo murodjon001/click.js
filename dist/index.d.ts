@@ -89,7 +89,7 @@ interface ICheckInvoiceStatusResponse{
     error_code: number
     error_note: string
     invoice_status: number
-    invoice_status_note: number
+    invoice_status_note: string
 }
 
 interface ICheckPaymentStatusParams{
@@ -114,7 +114,7 @@ interface ICheckPaymentStatusByMerchantTransIdResponse {
     payment_id: number
     error_code: number
     error_note: string
-    payment_status: number
+    merchant_trans_id: string
 }
 
 interface ICancellationPaymentParams{
