@@ -35,7 +35,7 @@ interface IPayWithTokenResponse {
 }
 
 interface IPayWithTokenParams{
-    service_id: string
+    service_id: number
     card_token: string
     amount: number
     merchant_trans_id: string
