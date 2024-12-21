@@ -182,9 +182,10 @@ export class MerchantApi implements IMerchantApi {
 
         try{
             const res = await this.clickRequest.post(PAYED_BY_TOKEN, {
+                service_id: params.service_id,
                 card_token: params.card_token,
                 amount: params.amount,
-                merchant_trans_id: params.merchant_trans_id,
+                transaction_parameter: params.merchant_trans_id,
             })
 
             return res.data

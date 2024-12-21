@@ -24,7 +24,7 @@ export interface IDeleteTokenCardResponse {
 
 export interface IDeleteTokenCardParams{
     service_id: number
-    card_token: number
+    card_token: string
 }
 
 export interface IPayWithTokenResponse {
@@ -35,6 +35,7 @@ export interface IPayWithTokenResponse {
 }
 
 export interface IPayWithTokenParams{
+    service_id: string
     card_token: string
     amount: number
     merchant_trans_id: string
