@@ -35,7 +35,7 @@ export interface IPayWithTokenResponse {
 }
 
 export interface IPayWithTokenParams{
-    service_id: string
+    service_id: number
     card_token: string
     amount: number
     merchant_trans_id: string
