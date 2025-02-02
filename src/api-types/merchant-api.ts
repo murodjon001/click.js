@@ -36,7 +36,7 @@ import {
 } from "../interfaces/merchant-api.interface";
 import { IConnectionKeysParams } from "../interfaces/connection-keys-params.interface";
 import axios, { AxiosInstance } from 'axios';
-import sha1 from "crypto-js/sha1";
+import { SHA1 } from 'crypto-js';
 
 export class MerchantApi implements IMerchantApi {
     private secret_key!: string;
@@ -230,7 +230,10 @@ export class MerchantApi implements IMerchantApi {
      * @private
      */
     private get authorization (): string{
-        const timestampHashAndSecretKeyHash = sha1(String(this.timestamp) + this.secret_key).toString()
+        // const timestampHashAndSecretKeyHash = sha1(String(this.timestamp) + this.secret_key).toString()
+        const timestampHashAndSecretKeyHash = SHA1(
+            String(this.timestamp) + this.secret_key,
+          ).toString();
 
         return `${this.user_id}:${timestampHashAndSecretKeyHash}:${this.timestamp}`
     }
